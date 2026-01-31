@@ -6,9 +6,9 @@ import { dbConnect } from "@/lib/dbConnect";
 import User from "@/models/User";
 
 export const POST = async (req) => {
-    await dbConnect();
-    let body = await req.formData();
-    body = Object.fromEntries(body);
+  await dbConnect();
+  let body = await req.formData();
+  body = Object.fromEntries(body);
 
   //Check if razorpayOrderId is present on the server
   let p = await Payment.findOne({ oid: body.razorpay_order_id });
@@ -19,9 +19,12 @@ export const POST = async (req) => {
     );
   }
 
-//fetch the secret of the user who is receiving the payment
-let user = await User.findOne({ username: p.to_user });
-const secret = user.razorpaysecret;
+  //fetch the secret of the user who is receiving the payment
+  // let user = await User.findOne({ username: p.to_user });
+  // const secret = user.razorpaysecret;
+
+  //ChatGPT modification to use global secret if user secret is not present
+  const secret = process.env.RAZORPAY_KEY_SECRET;
 
   //Verify the payment signature
   let xx = validatePaymentVerification(
@@ -40,7 +43,7 @@ const secret = user.razorpaysecret;
       { new: true },
     );
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_URL}/${updatedPayment.to_user}?payment=success`,
+      `${process.env.NEXTAUTH_URL}/${updatedPayment.to_user}?payment=success`,
     );
   } else {
     return NextResponse.json(
