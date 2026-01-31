@@ -67,8 +67,16 @@ const Dashboard = () => {
         transition: Bounce,
       });
     }
+    //ChatGPT modification to update profile pic and username in session
+    await fetch("/api/user/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        profilepic: form.profilepic,
+        username: form.username,
+      }),
+    });
   };
-
 
   return (
     <>
