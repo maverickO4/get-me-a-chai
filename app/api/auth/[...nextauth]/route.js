@@ -114,6 +114,11 @@ export const authOptions = NextAuth({
 
   callbacks: {
     async signIn({ user, account }) {
+      console.log("SIGNIN CALLBACK HIT", {
+        provider: account?.provider,
+        email: user?.email,
+        image: user?.image,
+      });
       if (account.provider === "github") {
         await dbConnect();
 
