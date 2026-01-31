@@ -79,6 +79,7 @@ export const POST = async (req) => {
   const secret = process.env.RAZORPAY_KEY_SECRET;
 
   if (!secret) {
+    console.error("❌ Razorpay secret missing");
     return NextResponse.json(
       { success: false, message: "Razorpay secret missing on server" },
       { status: 500 },
