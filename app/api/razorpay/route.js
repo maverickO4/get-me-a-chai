@@ -3,7 +3,6 @@
 // import Payment from "@/models/Payment";
 // import { dbConnect } from "@/lib/dbConnect";
 
-
 // export const POST = async (req) => {
 //   await dbConnect();
 //   let body = await req.formData();
@@ -52,8 +51,6 @@
 //   }
 // };
 
-
-
 //ChatGPT modified code
 import { NextResponse } from "next/server";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
@@ -74,17 +71,17 @@ export const POST = async (req) => {
   if (!payment) {
     return NextResponse.json(
       { success: false, message: "Order ID not found" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   // 2️⃣ Fetch Razorpay secret (GLOBAL, NOT USER)
-  const secret = process.env.KEY_SECRET;
+  const secret = process.env.RAZORPAY_KEY_SECRET;
 
   if (!secret) {
     return NextResponse.json(
       { success: false, message: "Razorpay secret missing on server" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -95,24 +92,24 @@ export const POST = async (req) => {
       payment_id: body.razorpay_payment_id,
     },
     body.razorpay_signature,
-    secret
+    secret,
   );
 
   if (!isValid) {
     return NextResponse.json(
       { success: false, message: "Payment verification failed" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   // 4️⃣ Mark payment as successful
   await Payment.findOneAndUpdate(
     { oid: body.razorpay_order_id },
-    { done: true }
+    { done: true },
   );
 
   // 5️⃣ Redirect back to creator page
   return NextResponse.redirect(
-    `${process.env.NEXTAUTH_URL}/${payment.to_user}?payment=success`
+    `${process.env.NEXTAUTH_URL}/${payment.to_user}?payment=success`,
   );
 };
