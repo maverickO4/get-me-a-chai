@@ -48,52 +48,98 @@ const PaymentPage = ({ username }) => {
     setpaymentform({ ...paymentform, [e.target.name]: e.target.value });
   };
 
+  // const pay = async (amount) => {
+  //   if (!paymentform.name) {
+  //     alert("Please enter your name");
+  //     return;
+  //   }
+  //   //Optional login check
+  //   if (status !== "authenticated") {
+  //     alert("Please login to continue");
+  //     return;
+  //   }
+
+  //   let a = await initiate(amount, username, paymentform);
+  //   let orderId = a.id;
+  //   //ChatGPT modified to get id from a
+  //   // if (a?.statusCode) {
+  //   //   alert(a.error);
+  //   //   return;
+  //   // }
+  //   // const orderId = a.id;
+
+  //   var options = {
+  //     key: currentUser.razorpayid, // Enter the Key ID generated from the Dashboard
+  //     amount: amount, // Amount is in currency subunits.
+  //     currency: "INR",
+  //     name: "Get Me A Chai", //your business name
+  //     description: "Test Transaction",
+  //     image: "https://example.com/your_logo",
+  //     order_id: orderId, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+  //     callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
+  //     prefill: {
+  //       //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+  //       name: "Gaurav Kumar", //your customer's name
+  //       email: "gaurav.kumar@example.com",
+  //       contact: "+919876543210", //Provide the customer's phone number for better conversion rates
+  //     },
+  //     notes: {
+  //       address: "Razorpay Corporate Office",
+  //     },
+  //     theme: {
+  //       color: "#3399cc",
+  //     },
+  //   };
+  //   var rzp1 = new Razorpay(options);
+  //   rzp1.open();
+
+  // };
+
+  
   const pay = async (amount) => {
-    if (!paymentform.name) {
-      alert("Please enter your name");
-      return;
-    }
-    //Optional login check
-    if (status !== "authenticated") {
-      alert("Please login to continue");
-      return;
-    }
+  // 1️⃣ Create order on server
+  const res = await fetch("/api/create-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      amount,
+      to_user: username,
+    }),
+  });
 
-    let a = await initiate(amount, username, paymentform);
-    let orderId = a.id;
-    //ChatGPT modified to get id from a
-    // if (a?.statusCode) {
-    //   alert(a.error);
-    //   return;
-    // }
-    // const orderId = a.id;
+  const data = await res.json();
 
-    var options = {
-      key: currentUser.razorpayid, // Enter the Key ID generated from the Dashboard
-      amount: amount, // Amount is in currency subunits.
-      currency: "INR",
-      name: "Get Me A Chai", //your business name
-      description: "Test Transaction",
-      image: "https://example.com/your_logo",
-      order_id: orderId, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-      callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
-      prefill: {
-        //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
-        name: "Gaurav Kumar", //your customer's name
-        email: "gaurav.kumar@example.com",
-        contact: "+919876543210", //Provide the customer's phone number for better conversion rates
-      },
-      notes: {
-        address: "Razorpay Corporate Office",
-      },
-      theme: {
-        color: "#3399cc",
-      },
-    };
-    var rzp1 = new Razorpay(options);
-    rzp1.open();
+  if (!data.success) {
+    alert("Failed to create order");
+    return;
+  }
 
+  const { orderId } = data;
+
+  // 2️⃣ Open Razorpay checkout
+  const options = {
+    key: currentUser.razorpayid,
+    amount: amount * 100,
+    currency: "INR",
+    name: "Get Me A Chai",
+    description: "Support Creator",
+    order_id: orderId,
+
+    callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
+
+    prefill: {
+      name: session.user.name,
+      email: session.user.email,
+    },
+
+    theme: {
+      color: "#3399cc",
+    },
   };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+};
 
   return (
     <>
