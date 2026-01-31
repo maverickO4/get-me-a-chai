@@ -104,7 +104,7 @@ import GithubProvider from "next-auth/providers/github";
 import User from "@/models/User";
 import { dbConnect } from "@/lib/dbConnect";
 
-export const authOptions = NextAuth({
+const authOptions = {
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID,
@@ -114,12 +114,9 @@ export const authOptions = NextAuth({
 
   callbacks: {
     async signIn({ user, account }) {
-      console.log("SIGNIN CALLBACK HIT", {
-        provider: account?.provider,
-        email: user?.email,
-        image: user?.image,
-      });
       if (account.provider === "github") {
+        console.log("SIGNIN CALLBACK HIT", user);
+
         await dbConnect();
 
         const email = user.email ?? `${user.id}@github.com`;
@@ -129,7 +126,7 @@ export const authOptions = NextAuth({
           {
             email,
             username: user.name || email.split("@")[0],
-            profilepic: user.image, // ✅ SAVE IMAGE
+            profilepic: user.image,
           },
           { upsert: true, new: true },
         );
@@ -145,14 +142,16 @@ export const authOptions = NextAuth({
       const dbUser = await User.findOne({ email: session.user.email });
 
       if (dbUser) {
-        session.user.name = dbUser.username;
-        session.user.profilepic = dbUser.profilepic; // ✅ EXPOSE IMAGE
         session.user.id = dbUser._id.toString();
+        session.user.name = dbUser.username;
+        session.user.profilepic = dbUser.profilepic;
       }
 
       return session;
     },
   },
-});
+};
 
-export { authOptions as GET, authOptions as POST };
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
