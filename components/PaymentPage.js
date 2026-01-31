@@ -92,6 +92,7 @@ const PaymentPage = ({ username }) => {
     };
     var rzp1 = new Razorpay(options);
     rzp1.open();
+
   };
 
   return (
@@ -102,7 +103,9 @@ const PaymentPage = ({ username }) => {
         <div className="cover w-full relative">
           <Image
             className="object-cover w-full"
-            src={`${currentUser.coverpic}`}
+            // src={`${currentUser.coverpic}`}
+            src={`${currentUser?.coverpic || "/cover.jpg"}`}
+            // src={profileImage}
             alt="cover"
             width={100}
             height={50}
@@ -113,7 +116,8 @@ const PaymentPage = ({ username }) => {
               className="rounded-full object-cover size-36"
               width={150}
               height={150}
-              src={`${currentUser.profilepic}`}
+              // src={`${currentUser.profilepic}`}
+              src={`${currentUser?.profilepic || "/avatar.gif"}`}
               alt="profile pic"
               unoptimized={true}
             />
@@ -121,9 +125,7 @@ const PaymentPage = ({ username }) => {
         </div>
         <div className="info flex flex-col justify-center items-center my-24 mb-32 gap-2">
           <div className="font-bold text-lg">@{username}</div>
-          <div className="font-semibold">
-            Lets help {username} get a chai!
-          </div>
+          <div className="font-semibold">Lets help {username} get a chai!</div>
           <div className="">
             {payments.length} Payments. ₹
             {payments.reduce((acc, payment) => acc + payment.amount, 0)}{" "}
@@ -223,7 +225,8 @@ const PaymentPage = ({ username }) => {
                   className="hover:cursor-pointer text-white bg-linear-to-br from-purple-600 to-blue-500 hover:bg-linear-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg w-full py-3 my-8 me-2 mb-2 disabled:opacity-50"
                   disabled={
                     paymentform.name?.length < 3 ||
-                    paymentform.message?.length < 4 || paymentform.amount?.length < 1
+                    paymentform.message?.length < 4 ||
+                    paymentform.amount?.length < 1
                   }
                 >
                   Pay
