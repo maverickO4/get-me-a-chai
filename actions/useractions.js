@@ -109,7 +109,11 @@ export const fetchuser = async (username) => {
   let u = await User.findOne({ username: username });
   // let user = u.toObject({ flattenObjectIds: true });
   if (!u) {
-    return null;
+    return {
+      username,
+      profilepic: "/avatar.gif",
+      name: username,
+    };
   }
 
   return u;
