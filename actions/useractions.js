@@ -107,8 +107,12 @@ const initiate = async (amount, to_user, paymentform) => {
 export const fetchuser = async (username) => {
   await dbConnect();
   let u = await User.findOne({ username: username });
-  let user = u.toObject({ flattenObjectIds: true });
-  return user;
+  // let user = u.toObject({ flattenObjectIds: true });
+  if (!u) {
+    return null;
+  }
+
+  return u;
 };
 
 // ChatGPT modified fetchuser to get user from session
@@ -151,11 +155,9 @@ export const updateProfile = async (data, oldusername) => {
     //Now update all the usernames in the Payments table
     await Payment.updateMany(
       { to_user: oldusername },
-      { to_user: ndata.username }
+      { to_user: ndata.username },
     );
-  }
-  else{
-
+  } else {
   }
   //ChatGPT returns
   return { success: true };

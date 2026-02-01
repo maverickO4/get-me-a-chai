@@ -23,6 +23,9 @@ const PaymentPage = ({ username }) => {
 
   const getData = async (params) => {
     let u = await fetchuser(username);
+    if (!u) {
+      return <div>User not found</div>;
+    }
     setCurrentUser(u);
     let dbpayments = await fetchpayments(username);
     setPayments(dbpayments);

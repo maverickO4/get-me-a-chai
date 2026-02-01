@@ -14,6 +14,9 @@ const Dashboard = () => {
 
   const getData = async () => {
     let u = await fetchuser(session.user.name);
+    if (!u) {
+      return <div>User not found</div>;
+    }
     setform(u);
   };
 
