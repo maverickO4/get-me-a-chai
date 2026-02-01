@@ -1,5 +1,5 @@
 "use client";
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -251,10 +251,14 @@ const Login = () => {
 
           <span>Continue with Apple</span>
         </button>
+        <marquee className="w-auto my-6" direction="left">
+          <p className="text-red-500 font-bold">
+            *As of now, only login through <span className="text-white">GitHub</span> is supported.
+          </p>
+        </marquee>
       </div>
     </div>
   );
 };
 
 export default Login;
-
