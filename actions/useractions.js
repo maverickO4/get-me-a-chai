@@ -106,14 +106,10 @@ const initiate = async (amount, to_user, paymentform) => {
 
 export const fetchuser = async (username) => {
   await dbConnect();
-  let u = await User.findOne({ username: username });
+  let u = await User.findOne({ username }).lean();
   // let user = u.toObject({ flattenObjectIds: true });
   if (!u) {
-    return {
-      username,
-      profilepic: "/avatar.gif",
-      name: username,
-    };
+    return null
   }
 
   return u;

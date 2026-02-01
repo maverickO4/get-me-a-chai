@@ -71,14 +71,17 @@ const Dashboard = () => {
       });
     }
     //ChatGPT modification to update profile pic and username in session
-    await fetch("/api/user/update", {
+    const res = await fetch("/api/user/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        profilepic: form.profilepic,
-        username: form.username,
-      }),
+      body: JSON.stringify(formData),
     });
+
+    const data = await res.json();
+
+    if (data.success) {
+      window.location.href = `/dashboard`; // ✅ DO NOT redirect by username
+    }
   };
 
   return (
