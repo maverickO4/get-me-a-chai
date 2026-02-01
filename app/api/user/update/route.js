@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { dbConnect } from "@/lib/dbConnect";
 import User from "@/models/User";
 
@@ -21,7 +21,7 @@ export async function POST(req) {
       ...(profilepic && { profilepic }),
       ...(username && { username }),
     },
-    { new: true }
+    { new: true },
   );
 
   return NextResponse.json({
