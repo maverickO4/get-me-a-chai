@@ -99,58 +99,68 @@
 // // export { handler as GET, handler as POST };
 
 // Production database connection below
+// import NextAuth from "next-auth";
+// import GithubProvider from "next-auth/providers/github";
+// import User from "@/models/User";
+// import { dbConnect } from "@/lib/dbConnect";
+
+// const authOptions = {
+//   providers: [
+//     GithubProvider({
+//       clientId: process.env.GITHUB_ID,
+//       clientSecret: process.env.GITHUB_SECRET,
+//     }),
+//   ],
+
+//   callbacks: {
+//     async signIn({ user, account }) {
+//       if (account.provider === "github") {
+//         console.log("SIGNIN CALLBACK HIT", user);
+
+//         await dbConnect();
+
+//         const email = user.email ?? `${user.id}@github.com`;
+
+//         await User.findOneAndUpdate(
+//           { email },
+//           {
+//             email,
+//             username: user.name || email.split("@")[0],
+//             profilepic: user.image,
+//           },
+//           { upsert: true, new: true },
+//         );
+
+//         return true;
+//       }
+//       return true;
+//     },
+
+//     async session({ session }) {
+//       await dbConnect();
+
+//       const dbUser = await User.findOne({ email: session.user.email });
+
+//       if (dbUser) {
+//         session.user.id = dbUser._id.toString();
+//         session.user.name = dbUser.username;
+//         session.user.profilepic = dbUser.profilepic;
+//       }
+
+//       return session;
+//     },
+//   },
+// };
+
+// const handler = NextAuth(authOptions);
+
+// export { handler as GET, handler as POST };
+
+
+
+
 import NextAuth from "next-auth";
-import GithubProvider from "next-auth/providers/github";
-import User from "@/models/User";
-import { dbConnect } from "@/lib/dbConnect";
-
-const authOptions = {
-  providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
-  ],
-
-  callbacks: {
-    async signIn({ user, account }) {
-      if (account.provider === "github") {
-        console.log("SIGNIN CALLBACK HIT", user);
-
-        await dbConnect();
-
-        const email = user.email ?? `${user.id}@github.com`;
-
-        await User.findOneAndUpdate(
-          { email },
-          {
-            email,
-            username: user.name || email.split("@")[0],
-            profilepic: user.image,
-          },
-          { upsert: true, new: true },
-        );
-
-        return true;
-      }
-      return true;
-    },
-
-    async session({ session }) {
-      await dbConnect();
-
-      const dbUser = await User.findOne({ email: session.user.email });
-
-      if (dbUser) {
-        session.user.id = dbUser._id.toString();
-        session.user.name = dbUser.username;
-        session.user.profilepic = dbUser.profilepic;
-      }
-
-      return session;
-    },
-  },
-};
+import { authOptions } from "@/lib/authOptions";
 
 const handler = NextAuth(authOptions);
 
